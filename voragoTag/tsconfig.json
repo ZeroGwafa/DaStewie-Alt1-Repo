@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
-		"moduleResolution": "Node"
+		"moduleResolution": "Node",
+		"allowJs": true
 	},
 	"allowTsInNodeModules": true
 }
