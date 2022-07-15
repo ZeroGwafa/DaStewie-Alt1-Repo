@@ -216,8 +216,13 @@ function parseMessages(lines) {
             current_spec = 1;
         // or new phase without spec
         } else if (!has_increased) {
-            current_spec--;
-            if (current_spec < 0) current_spec = 2;
+            // TODO: This was not correct?
+            // https://discord.com/channels/534508796639182860/989585700766761050/997464749182820384
+            // current_spec--;
+            // if (current_spec < 0) current_spec = 2;
+
+            // Always goes to 3rd spec unless it was the second spec skipped
+            current_spec = current_spec == 2 ? 1 : 3;
         }
 
         has_increased = false;
