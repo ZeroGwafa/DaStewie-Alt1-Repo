@@ -45,26 +45,27 @@ const flames_of_zamorak = {
     name: "Flames of Zamorak",
     chatbox: "world will burn",
     tooltip: `   
-• Zamorak will yell "The world will burn." and slam into the ground, 
+- Zamorak will yell "The world will burn." and slam into the ground, 
   dealing 2 melee hits and spawning Flames of Zamorak between 
   the player with aggression and Zamorak
-• To deal with this, all players walk under boss, :DeflectMelee: 
+- To deal with this, all players walk under boss, :DeflectMelee: 
   and use defensives if low hp
-• Black smoke (Flames of Zamorak) goes towards the a random player, 
-  the more smoke that is absorbed by a player the higher the typeless hit on them will be"
+- Black smoke (Flames of Zamorak) goes towards the a random player, 
+  the more smoke that is absorbed by a player the higher the typeless hit on them will be.
+  If not picked up Zamorak gets a damage reduction applied to him
 `,
 }
 const infernal_tomb = {
     name: "Infernal Tomb",
     chatbox: "into the dark",
     tooltip: `
-• Zamorak says "Step into the dark... meet your death.", 
+- Zamorak says "Step into the dark... meet your death.", 
   targets players, assigns a rune to them overhead and 
   transports them to Infernus where greater demons are marching 
   towards a portal to the main arena
-• Most players elect to use a quick couple abilities to kill 
+- Most players elect to use a quick couple abilities to kill 
   the demons (ideally :caroming4: :gchain: → ability)
-• Players must go to the pad with the same 
+- Players must go to the pad with the same 
   corresponding rune they received overhead
     - At higher enrages, it is highly suggested to pre-stun 
       Zamorak and defeat all demons before exiting
@@ -74,36 +75,36 @@ const adrenaline_cage = {
     name: "Adrenaline Cage",
     chatbox: "chaos, unfettered",
     tooltip: `
-• Zamorak will say "Chaos, unfettered!" then drop 
+- Zamorak will say "Chaos, unfettered!" then drop 
   the prayers of those affected by the attack, 
   preparing to bombard base with heavy magic attacks.
-• Remain still, :DeflectMage: and use :debil: , :reflect: or :devo:
+- Remain still, :DeflectMage: and use :debil: , :reflect: or :devo:
 `
 }
 const chaos_blast = {
     name: "Chaos Blast",
     chatbox: "will tear you",
     tooltip: `
-• Zamorak will charge up his attack shouting "I will tear you asunder!"
-• To deal with the mechanic successfully stun him enough times, 
+- Zamorak will charge up his attack shouting "I will tear you asunder!"
+- To deal with the mechanic successfully stun him enough times, 
   after such a damage requirement will appear to force him 
   to launch the attack early
-• He will yell Feel the rage of a god. and send a red projectile 
+- He will yell Feel the rage of a god. and send a red projectile 
   that deals up to 25,000 soft typeless damage - this is 
   reduced based on how fast he is interrupted
-• Use :vitality: / :res: / :disrupt: , at higher enrages you may need to use :immort:
+- Use :vitality: / :res: / :disrupt: , at higher enrages you may need to use :immort:
 `
 }
 const rune_dest = {
     name: "Rune of Destruction",
     chatbox: "already dead",
     tooltip: `
-• Zamorak will yell "You're already dead." and lay a massive 
+- Zamorak will yell "You're already dead." and lay a massive 
   red rune around him, with a gap between two circles
-• Black sludge will run clockwise or counterclockwise 
+- Black sludge will run clockwise or counterclockwise 
   sometimes changing direction and applies stuns to those caught in it
-• Standing in the red areas will deal rapid soft typeless damage
-• The player cannot teleport to Infernus and runes cannot 
+- Standing in the red areas will deal rapid soft typeless damage
+- The player cannot teleport to Infernus and runes cannot 
   be charged for the duration of the attack
 `
 }
