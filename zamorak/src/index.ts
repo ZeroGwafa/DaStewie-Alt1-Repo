@@ -27,11 +27,10 @@ const appColor = A1lib.mixColor(0, 255, 0);
 
 var phase = A1lib.ImageDetect.webpackImages(
 	{
-        "p0": require("./images/edicts_0.data.png"),
-		"p1": require("./images/edicts_1.data.png"),
-        "p2": require("./images/edicts_2.data.png"),
-        "p3": require("./images/edicts_3.data.png"),    
-        "p4": require("./images/edicts_4.data.png"),
+        "p1": require("./images/edicts_1.data.png"),
+		"p2": require("./images/edicts_2.data.png"),
+        "p3": require("./images/edicts_3.data.png"),
+        "p4": require("./images/edicts_4.data.png"),    
         "p5": require("./images/edicts_5.data.png"),
         "p6": require("./images/edicts_6.data.png")
 	}
@@ -40,6 +39,7 @@ var phase = A1lib.ImageDetect.webpackImages(
 
 // Spec order:
 // https://cdn.discordapp.com/attachments/992218608602189854/996933729933082784/K1u9v5j.png
+const entry = "But this is as far as you go"
 const channeler = "Zamorak begins to draw power and energy";  
 const flames_of_zamorak = {
     name: "Flames of Zamorak",
@@ -110,7 +110,6 @@ const rune_dest = {
     	
 
 var msg = {
-    "p0": [flames_of_zamorak, infernal_tomb, rune_dest], // There are no specs on phase 0
     "p1": [flames_of_zamorak, infernal_tomb, rune_dest],
     "p2": [infernal_tomb, adrenaline_cage, flames_of_zamorak],
     "p3": [adrenaline_cage, chaos_blast, infernal_tomb],
@@ -181,7 +180,7 @@ function compare(str1, str2) {
 }
 
 function getPhase() {
-    var current_phase = 0;
+    var current_phase = 1;
 
     var img = A1lib.captureHoldFullRs();
 
@@ -196,63 +195,81 @@ function getPhase() {
 
     // No phase found
     if (current_phase > 6) {
-        current_phase = 0;
+        current_phase = -1;
     }
 
     return current_phase;
 }
 
-var last_phase = -1;
-var current_spec  = 1; // Initialise at 1 because it will subtract on start-up
+function updateUI(current_phase) {
+    $("#phase").text("Phase " + current_phase);
+    $("#spec tr > td").each(function( index ) {
+        $(this).text(msg["p" + current_phase][index].name);
+        $(this).attr('title', (msg["p" + current_phase][index].tooltip))
+    });
+}
+
+
+var last_phase = 1;
+var next_spec  = 0; // Initialise at 1 because it will subtract on start-up
 var has_increased = false;
 function parseMessages(lines) {
-    var current_phase = getPhase();    
+    var new_phase = getPhase();
+    var current_phase = new_phase == -1 ? last_phase : new_phase;    
     
     if(current_phase != last_phase) {
         last_phase = current_phase;
 
         // New kill
-        if (current_phase == 1) {
-            current_spec = 1;
-        // or new phase without spec
-        } else if (!has_increased) {
+        if (!has_increased) {
             // TODO: This was not correct?
             // https://discord.com/channels/534508796639182860/989585700766761050/997464749182820384
-            // current_spec--;
-            // if (current_spec < 0) current_spec = 2;
+            // next_spec--;
+            // if (next_spec < 0) next_spec = 2;
 
+            // Go back and follow red arrow
             // Always goes to 3rd spec unless it was the second spec skipped
-            current_spec = current_spec == 2 ? 1 : 3;
+            next_spec--;
+            next_spec = next_spec == 1 ? 0 : 2;
+            console.log("Skipped a spec");
+        } else {
+            next_spec--; // Go down in the chart following the black arrow
+            if (next_spec < 0) next_spec = 2;
         }
-
+        updateUI(current_phase);
         has_increased = false;
-        $("#phase").text("Phase " + (current_phase ? current_phase : 1));
-        $("#spec tr > td").each(function( index ) {
-            $(this).text(msg["p" + current_phase][index].name);
-            $(this).attr('title', (msg["p" + current_phase][index].tooltip))
-        });
     }
 
     for (const a in lines) {
         for (let b = 0; b < msg["p" + current_phase].length; b++) {
+            if (compare(lines[a].text, entry)) {
+                console.log("New kill");
+                has_increased = false;
+                current_phase = 1;
+                updateUI(current_phase);
+                next_spec = 0;
+            }
             if (compare(lines[a].text, msg["p" + current_phase][b].chatbox)) {
-                current_spec = b + 1;
+                next_spec = b + 1;
                 has_increased = true;
 
-                if (current_spec > 2) current_spec = 0;
+                if (next_spec > 2) next_spec = 0;
+
+                console.log("Next spec: " +  next_spec + " Phase: " + current_phase);
                 break;
             }
         }
     }
 
     $("#spec tr").removeClass("selected");
-    $("#spec tr").eq(current_spec).addClass("selected");
+    $("#spec tr").eq(next_spec).addClass("selected");
 
-    // console.log(current_spec);
-    return current_spec;
+    // console.log(next_spec);
+    return next_spec;
 }
 
 //check if we are running inside alt1 by checking if the alt1 global exists
 if (window.alt1) {
     alt1.identifyAppUrl("./appconfig.json");
+    updateUI(1);
 }
