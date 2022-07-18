@@ -28,7 +28,7 @@ var phase = A1lib.ImageDetect.webpackImages(
 const entry = {
     en: "But this is as far as you go",
     fr: "pas plus loin",
-    // de: "Aber dies ist die letzte Stelle"
+    de: "Sie haben es geschafft"
 }
 
 const channeler = "Zamorak begins to draw power and energy";  
@@ -36,7 +36,7 @@ const flames_of_zamorak = {
     name: "Flames of Zamorak",
     en: "world will burn",
     fr: "Que ce monde",
-    // de: "welt wird zum brennen",
+    de: "Diese Welt wird",
     tooltip: `   
 - Zamorak will yell "The world will burn." and slam into the ground, 
   dealing 2 melee hits and spawning Flames of Zamorak between 
@@ -52,7 +52,7 @@ const infernal_tomb = {
     name: "Infernal Tomb",
     en: "into the dark",
     fr: "Avancez dans les",
-    // de: "in den schwarzen Tiefen",
+    de: "Kommen Sie ins",
     tooltip: `
 - Zamorak says "Step into the dark... meet your death.", 
   targets players, assigns a rune to them overhead and 
@@ -70,7 +70,7 @@ const adrenaline_cage = {
     name: "Adrenaline Cage",
     en: "chaos, unfettered",
     fr: "LE CHAOS",
-    // de: "chaos, ungefesselt",
+    de: "TOTALES CHAOS",
     tooltip: `
 - Zamorak will say "Chaos, unfettered!" then drop 
   the prayers of those affected by the attack, 
@@ -82,7 +82,7 @@ const chaos_blast = {
     name: "Chaos Blast",
     en: "will tear you",
     fr: "vais vous mettre",
-    // de: "wird dich zerstören",
+    de: "Ich werde Sie",
     tooltip: `
 - Zamorak will charge up his attack shouting "I will tear you asunder!"
 - To deal with the mechanic successfully stun him enough times, 
@@ -98,7 +98,7 @@ const rune_dest = {
     name: "Rune of Destruction",
     en: "already dead",
     fr: "votre mort est",
-    // de: "bereits tot",
+    de: "Sie sind schon",
     tooltip: `
 - Zamorak will yell "You're already dead." and lay a massive 
   red rune around him, with a gap between two circles
@@ -145,9 +145,7 @@ function showSelectedChat(chat) {
     } catch { }
 }
 
-
-
-  //Find all visible chatboxes on screen
+//Find all visible chatboxes on screen
 let findChat = setInterval(function () {
     if (reader.pos === null)
         reader.find();
@@ -160,8 +158,9 @@ let findChat = setInterval(function () {
             //If multiple boxes are found, this will select the first, which should be the top-most chat box on the screen.
             reader.pos.mainbox = reader.pos.boxes[0];
         }
-            showSelectedChat(reader.pos);
-            setInterval(function () {
+
+        showSelectedChat(reader.pos);
+        setInterval(function () {
             readChatbox();
         }, 600);
     }
@@ -179,10 +178,11 @@ function readChatbox() {
     parseMessages(opts);
 }
 
-function compare(str1: string, str2: { en: string; fr: string; }) {
+function compare(str1: string, str2: { en: string; fr: string; de: string; }) {
     // Compare all languages with the input string
     return str1.toLowerCase().includes(str2.en.toLowerCase()) ||
-           str1.toLowerCase().includes(str2.fr.toLowerCase());
+           str1.toLowerCase().includes(str2.fr.toLowerCase()) ||
+           str1.toLowerCase().includes(str2.de.toLowerCase());
 }
 
 function getPhase() {
