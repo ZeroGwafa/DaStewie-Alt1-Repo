@@ -1,34 +1,20 @@
 //alt1 base libs, provides all the commonly used methods for image matching and capture
 //also gives your editor info about the window.alt1 api
 import * as A1lib from "@alt1/base";
-import { ImgRef } from "@alt1/base";
-import * as Chatbox from "@alt1/chatbox";
+import * as ChatboxReader from "@alt1/chatbox";
 
 import * as $ from "./jquery";
-
-// https://github.com/MarkvsRs/BarrowsHelperSrc/blob/main/src/index.ts
-
-// #to initialize the repo and install dependencies
-// npm i
-// #build
-// npm run build
-// #alternatively to auto-rebuild when source files are changed
-// npm run watch
 
 //tell webpack to add index.html and appconfig.json to output
 require("!file-loader?name=[name].[ext]!./index.html");
 require("!file-loader?name=[name].[ext]!./appconfig.json");
 
-// Status for timer 
-var running = false;
-var output = document.getElementById("output");
-
 const appColor = A1lib.mixColor(0, 255, 0);
 
 var phase = A1lib.ImageDetect.webpackImages(
-	{
+    {
         "p1": require("./images/edicts_1.data.png"),
-		"p2": require("./images/edicts_2.data.png"),
+        "p2": require("./images/edicts_2.data.png"),
         "p3": require("./images/edicts_3.data.png"),
         "p4": require("./images/edicts_4.data.png"),    
         "p5": require("./images/edicts_5.data.png"),
@@ -39,11 +25,18 @@ var phase = A1lib.ImageDetect.webpackImages(
 
 // Spec order:
 // https://cdn.discordapp.com/attachments/992218608602189854/996933729933082784/K1u9v5j.png
-const entry = "But this is as far as you go"
+const entry = {
+    en: "But this is as far as you go",
+    fr: "pas plus loin",
+    // de: "Aber dies ist die letzte Stelle"
+}
+
 const channeler = "Zamorak begins to draw power and energy";  
 const flames_of_zamorak = {
     name: "Flames of Zamorak",
-    chatbox: "world will burn",
+    en: "world will burn",
+    fr: "Que ce monde",
+    // de: "welt wird zum brennen",
     tooltip: `   
 - Zamorak will yell "The world will burn." and slam into the ground, 
   dealing 2 melee hits and spawning Flames of Zamorak between 
@@ -57,7 +50,9 @@ const flames_of_zamorak = {
 }
 const infernal_tomb = {
     name: "Infernal Tomb",
-    chatbox: "into the dark",
+    en: "into the dark",
+    fr: "Avancez dans les",
+    // de: "in den schwarzen Tiefen",
     tooltip: `
 - Zamorak says "Step into the dark... meet your death.", 
   targets players, assigns a rune to them overhead and 
@@ -73,7 +68,9 @@ const infernal_tomb = {
 }
 const adrenaline_cage = {
     name: "Adrenaline Cage",
-    chatbox: "chaos, unfettered",
+    en: "chaos, unfettered",
+    fr: "LE CHAOS",
+    // de: "chaos, ungefesselt",
     tooltip: `
 - Zamorak will say "Chaos, unfettered!" then drop 
   the prayers of those affected by the attack, 
@@ -83,7 +80,9 @@ const adrenaline_cage = {
 }
 const chaos_blast = {
     name: "Chaos Blast",
-    chatbox: "will tear you",
+    en: "will tear you",
+    fr: "vais vous mettre",
+    // de: "wird dich zerstören",
     tooltip: `
 - Zamorak will charge up his attack shouting "I will tear you asunder!"
 - To deal with the mechanic successfully stun him enough times, 
@@ -97,7 +96,9 @@ const chaos_blast = {
 }
 const rune_dest = {
     name: "Rune of Destruction",
-    chatbox: "already dead",
+    en: "already dead",
+    fr: "votre mort est",
+    // de: "bereits tot",
     tooltip: `
 - Zamorak will yell "You're already dead." and lay a massive 
   red rune around him, with a gap between two circles
@@ -119,14 +120,14 @@ var msg = {
     "p6": [flames_of_zamorak, infernal_tomb, rune_dest],
 }
 
-let reader = new Chatbox.default();
+let reader = new ChatboxReader.default();
 reader.readargs = {
-  colors: [
-    A1lib.mixColor(255,255,255),    // White (Timestamp)
-    A1lib.mixColor(127,169,255),    // Blue (Timestamp)
-    A1lib.mixColor(153,255,153),    // Green (Zamorak's voice)
-    A1lib.mixColor(232,4,4)         // Red (Zamorak)
-  ]
+    colors: [
+        A1lib.mixColor(255,255,255),    // White (Timestamp)
+        A1lib.mixColor(127,169,255),    // Blue (Timestamp)
+        A1lib.mixColor(153,255,153),    // Green (Zamorak's voice)
+        A1lib.mixColor(232,4,4)         // Red (Zamorak)
+    ]
 };
 
 function showSelectedChat(chat) {
@@ -144,40 +145,44 @@ function showSelectedChat(chat) {
     } catch { }
 }
 
+
+
   //Find all visible chatboxes on screen
 let findChat = setInterval(function () {
     if (reader.pos === null)
-      reader.find();
+        reader.find();
     else {
-      clearInterval(findChat);
-  
-      if (localStorage.ccChat) {
-        reader.pos.mainbox = reader.pos.boxes[localStorage.ccChat];
-      } else {
-        //If multiple boxes are found, this will select the first, which should be the top-most chat box on the screen.
-        reader.pos.mainbox = reader.pos.boxes[0];
-      }
-      showSelectedChat(reader.pos);
-      setInterval(function () {
-        readChatbox();
-      }, 600);
+        clearInterval(findChat);
+
+        if (localStorage.ccChat) {
+            reader.pos.mainbox = reader.pos.boxes[localStorage.ccChat];
+        } else {
+            //If multiple boxes are found, this will select the first, which should be the top-most chat box on the screen.
+            reader.pos.mainbox = reader.pos.boxes[0];
+        }
+            showSelectedChat(reader.pos);
+            setInterval(function () {
+            readChatbox();
+        }, 600);
     }
-  }, 1000);
+}, 1000);
 
 function readChatbox() {
-  var opts = reader.read() || [];
-  var chat = "";
+    var opts = reader.read() || [];
+    var chat = "";
 
-  for (const a in opts) {
-    chat += opts[a].text + " ";
-  }
-  console.log(chat);
+    for (const a in opts) {
+        chat += opts[a].text + " ";
+    }
+    console.log(chat);
 
-  var spec = parseMessages(opts);
+    parseMessages(opts);
 }
 
-function compare(str1, str2) {
-    return str1.toLowerCase().includes(str2.toLowerCase());
+function compare(str1: string, str2: { en: string; fr: string; }) {
+    // Compare all languages with the input string
+    return str1.toLowerCase().includes(str2.en.toLowerCase()) ||
+           str1.toLowerCase().includes(str2.fr.toLowerCase());
 }
 
 function getPhase() {
@@ -212,7 +217,7 @@ function updateUI(current_phase) {
 
 
 var last_phase = 1;
-var next_spec  = 0; // Initialise at 1 because it will subtract on start-up
+var next_spec  = 0;
 var has_increased = false;
 function parseMessages(lines) {
     var new_phase = getPhase();
@@ -221,20 +226,16 @@ function parseMessages(lines) {
     if(current_phase != last_phase) {
         last_phase = current_phase;
 
-        // New kill
+        // Spec skipped
         if (!has_increased) {
-            // TODO: This was not correct?
-            // https://discord.com/channels/534508796639182860/989585700766761050/997464749182820384
-            // next_spec--;
-            // if (next_spec < 0) next_spec = 2;
-
-            // Go back and follow red arrow
+            // Go back and follow red arrow in the chart
             // Always goes to 3rd spec unless it was the second spec skipped
             next_spec--;
             next_spec = next_spec == 1 ? 0 : 2;
             console.log("Skipped a spec");
         } else {
-            next_spec--; // Go down in the chart following the black arrow
+            // Go back and down following the black arrow in the chart
+            next_spec--; 
             if (next_spec < 0) next_spec = 2;
         }
         updateUI(current_phase);
@@ -250,7 +251,7 @@ function parseMessages(lines) {
                 updateUI(current_phase);
                 next_spec = 0;
             }
-            if (compare(lines[a].text, msg["p" + current_phase][b].chatbox)) {
+            if (compare(lines[a].text, msg["p" + current_phase][b])) {
                 next_spec = b + 1;
                 has_increased = true;
 
@@ -264,9 +265,6 @@ function parseMessages(lines) {
 
     $("#spec tr").removeClass("selected");
     $("#spec tr").eq(next_spec).addClass("selected");
-
-    // console.log(next_spec);
-    return next_spec;
 }
 
 //check if we are running inside alt1 by checking if the alt1 global exists
