@@ -109,9 +109,8 @@ const rune_dest = {
   be charged for the duration of the attack
 `
 }
-    	
 
-var msg = {
+var special_attacks = {
     "p1": [flames_of_zamorak, infernal_tomb, rune_dest],
     "p2": [infernal_tomb, adrenaline_cage, flames_of_zamorak],
     "p3": [adrenaline_cage, chaos_blast, infernal_tomb],
@@ -175,7 +174,7 @@ function readChatbox() {
     }
     console.log(chat);
 
-    parseMessages(opts);
+    specAttackTracker(opts);
 }
 
 function compare(str1: string, str2: { en: string; fr: string; de: string; }) {
@@ -207,27 +206,17 @@ function getPhase() {
     return current_phase;
 }
 
-function updateUI(current_phase) {
-    $("#phase").text("Phase " + current_phase);
-    $("#spec tr > td").each(function( index ) {
-        $(this).text(msg["p" + current_phase][index].name);
-        $(this).attr('title', (msg["p" + current_phase][index].tooltip))
-    });
-}
-
-
 var last_phase = 1;
 var next_spec  = 0;
-var has_increased = false;
-function parseMessages(lines) {
+var skipped_spec = true;
+function specAttackTracker(lines) {
     var new_phase = getPhase();
     var current_phase = new_phase == -1 ? last_phase : new_phase;    
     
     if(current_phase != last_phase) {
         last_phase = current_phase;
 
-        // Spec skipped
-        if (!has_increased) {
+        if (skipped_spec) {
             // Go back and follow red arrow in the chart
             // Always goes to 3rd spec unless it was the second spec skipped
             next_spec--;
@@ -239,21 +228,23 @@ function parseMessages(lines) {
             if (next_spec < 0) next_spec = 2;
         }
         updateUI(current_phase);
-        has_increased = false;
+        skipped_spec = true;
     }
 
     for (const a in lines) {
-        for (let b = 0; b < msg["p" + current_phase].length; b++) {
-            if (compare(lines[a].text, entry)) {
+        var line = lines[a].text;
+        var specs = special_attacks["p" + current_phase]; // Get the current phase's special attacks
+        for (let idx = 0; idx < specs.length; idx++) {
+            if (compare(line, entry)) {
                 console.log("New kill");
-                has_increased = false;
+                skipped_spec = true;
                 current_phase = 1;
                 updateUI(current_phase);
                 next_spec = 0;
             }
-            if (compare(lines[a].text, msg["p" + current_phase][b])) {
-                next_spec = b + 1;
-                has_increased = true;
+            if (compare(line, specs[idx])) {
+                next_spec = idx + 1;
+                skipped_spec = false;
 
                 if (next_spec > 2) next_spec = 0;
 
@@ -265,6 +256,14 @@ function parseMessages(lines) {
 
     $("#spec tr").removeClass("selected");
     $("#spec tr").eq(next_spec).addClass("selected");
+}
+
+function updateUI(current_phase) {
+    $("#phase").text("Phase " + current_phase);
+    $("#spec tr > td").each(function( index ) {
+        $(this).text(special_attacks["p" + current_phase][index].name);
+        $(this).attr('title', (special_attacks["p" + current_phase][index].tooltip))
+    });
 }
 
 //check if we are running inside alt1 by checking if the alt1 global exists
