@@ -1,0 +1,16 @@
+{
+	"appName": "Spellcast tracker",
+	"description": "Keeps track of which spell is selected",
+	"appUrl":"./",
+	"configUrl":"./appconfig.jon",
+	"iconUrl": "images/Magic.png",
+	"defaultWidth": 40,
+	"defaultHeight": 40,
+	"minWidth": 40,
+	"minHeight": 40,
+	"maxWidth": 40,
+	"maxHeight": 40,
+	"requestHandlers": [ ],
+	"activators": [ ],
+	"permissions": "overlay,pixel,gamestate"
+}
