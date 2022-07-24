@@ -230,7 +230,7 @@ function specAttackTracker(lines) {
         updateUI(current_phase);
         skipped_spec = true;
     }
-
+    
     for (const a in lines) {
         var line = lines[a].text;
         var specs = special_attacks["p" + current_phase]; // Get the current phase's special attacks
