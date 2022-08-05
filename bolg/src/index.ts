@@ -3,13 +3,13 @@
 import * as A1lib from "@alt1/base";
 import * as BuffReader from "@alt1/buffs";
 
-var font = require("@alt1/ocr/fonts/pixel_digits_8px_shadow.js");
+let font = require("@alt1/ocr/fonts/pixel_digits_8px_shadow.js");
 
 //tell webpack to add index.html and appconfig.json to output
 require("!file-loader?name=[name].[ext]!./index.html");
 require("!file-loader?name=[name].[ext]!./appconfig.json");
 
-var imgs = A1lib.ImageDetect.webpackImages(
+let imgs = A1lib.ImageDetect.webpackImages(
     {
         "bolg": require("./images/bolg.data.png"),
         "bolg_large": require("./images/bolg_large.data.png"),
@@ -20,15 +20,17 @@ var imgs = A1lib.ImageDetect.webpackImages(
 );
 
 // Search for bolg buff by using images. This is a slow method but does support medium and large buffs.
-var buff_sizes = [ "bolg_small", "bolg_medium", "bolg_larg" ];
+let buff_sizes = [ "bolg_small", "bolg_medium", "bolg_larg" ];
 function readBuffsByImage() {
     let canvas = document.getElementById("canvas") as HTMLCanvasElement;
     let ctx = canvas.getContext("2d");
+
+    // Clear the canvas and draw the empty buff icon
     ctx.drawImage(imgs.bolg_large.toImage(), 0, 0, canvas.width, canvas.height);   
 
-    var img = A1lib.captureHoldFullRs();
+    let img = A1lib.captureHoldFullRs();
     
-    var sizes = {
+    let sizes = {
         "bolg_small": 27, 
         "bolg_medium": 32, 
         "bolg_larg": 36
@@ -36,11 +38,13 @@ function readBuffsByImage() {
 
     // Look for the current phase
     for (let key in buff_sizes) {
-        var name = buff_sizes[key];
-        var img_found = img.findSubimage(imgs[name]);
+        let name = buff_sizes[key];
+        let img_found = img.findSubimage(imgs[name]);
         if (img_found.length > 0) { 
-            var size = sizes[name];
-            var buff = A1lib.capture(img_found[0].x, img_found[0].y, size, size);
+            // At zamorak there is a mechanic with the same icon, the last one is always bolg.
+            let last_item = img_found.length-1;
+            let size = sizes[name];
+            let buff = A1lib.capture(img_found[last_item].x, img_found[last_item].y, size, size);
             
             ctx.drawImage(buff.toDrawableData().toImage(), 0, 0, size, size, 0, 0, canvas.width, canvas.height);
             buff_sizes = [ buff_sizes[key] ];
@@ -52,10 +56,10 @@ function readBuffsByImage() {
 
 let reader = new BuffReader.default();
 function showSelectedBuffs(chat) {
-    var buffsize = 27;
-	var gridsize = 30;
+    let buffsize = 27;
+	let gridsize = 30;
     console.log(chat);
-    //Attempt to show a temporary rectangle around the chatbox.  skip if overlay is not enabled.
+    // Attempt to show a temporary rectangle around the chatbox.  skip if overlay is not enabled.
     try {
       alt1.overLayRect(
         A1lib.mixColor(0, 255, 0),
@@ -70,17 +74,22 @@ function showSelectedBuffs(chat) {
 }
 
 function readBuffs() {
-    var opts = reader.read() || [];
+    let opts = reader.read() || [];
     let canvas = document.getElementById("canvas") as HTMLCanvasElement;
     let ctx = canvas.getContext("2d");
+
+    // Clear the canvas and draw the empty buff icon
     ctx.drawImage(imgs.bolg_large.toImage(), 0, 0, canvas.width, canvas.height);
 
-    for (const a in opts) {
+    // At zamorak there is a mechanic with the same icon, the last one is always bolg
+    // Reverse the order of the buffs so that the last one is the one we want.
+    for (const a in opts.reverse()) {
         if (opts[a].compareBuffer(imgs.bolg)) {            
             let img = opts[a].buffer.toImage();
 
             // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);        
             ctx.drawImage(img, opts[a].bufferx, opts[a].buffery, 27, 27, 0, 0, canvas.width, canvas.height);
+            break;
         }
     }
 }
@@ -115,7 +124,7 @@ if (window.alt1) {
                 reader.find();
             else {
                 clearInterval(findBuffBar);
-                var square = reader.getCaptRect();
+                let square = reader.getCaptRect();
                 showSelectedBuffs(square);
         
                 setInterval(function () {
