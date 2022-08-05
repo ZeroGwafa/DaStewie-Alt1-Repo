@@ -1,0 +1,16 @@
+{
+	"appName": "Zamorak order",
+	"description": "Zamorak order",
+	"appUrl":"./",
+	"configUrl":"./appconfig.jon",
+	"iconUrl": "images/Zamorak_chathead.png",
+	"defaultWidth": 100,
+	"defaultHeight": 50,
+	"minWidth": 50,
+	"minHeight": 20,
+	"maxWidth": 400,
+	"maxHeight": 500,
+	"requestHandlers": [ ],
+	"activators": [ ],
+	"permissions": "overlay,pixel,gamestate"
+}
