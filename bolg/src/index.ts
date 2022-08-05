@@ -12,28 +12,28 @@ require("!file-loader?name=[name].[ext]!./appconfig.json");
 let imgs = A1lib.ImageDetect.webpackImages(
     {
         "bolg": require("./images/bolg.data.png"),
-        "bolg_large": require("./images/bolg_large.data.png"),
+        "bolg_empty": require("./images/bolg_empty.data.png"),
         "bolg_small": require("./images/bolg_small.data.png"),
         "bolg_medium": require("./images/bolg_medium.data.png"),
-        "bolg_larg": require("./images/bolg_larg.data.png"),
+        "bolg_large": require("./images/bolg_large.data.png"),
 	}
 );
 
 // Search for bolg buff by using images. This is a slow method but does support medium and large buffs.
-let buff_sizes = [ "bolg_small", "bolg_medium", "bolg_larg" ];
+let buff_sizes = [ "bolg_small", "bolg_medium", "bolg_large" ];
 function readBuffsByImage() {
     let canvas = document.getElementById("canvas") as HTMLCanvasElement;
     let ctx = canvas.getContext("2d");
 
     // Clear the canvas and draw the empty buff icon
-    ctx.drawImage(imgs.bolg_large.toImage(), 0, 0, canvas.width, canvas.height);   
+    ctx.drawImage(imgs.bolg_empty.toImage(), 0, 0, canvas.width, canvas.height);   
 
     let img = A1lib.captureHoldFullRs();
     
     let sizes = {
         "bolg_small": 27, 
         "bolg_medium": 32, 
-        "bolg_larg": 36
+        "bolg_large": 36
     }
 
     // Look for the current phase
@@ -47,6 +47,8 @@ function readBuffsByImage() {
             let buff = A1lib.capture(img_found[last_item].x, img_found[last_item].y, size, size);
             
             ctx.drawImage(buff.toDrawableData().toImage(), 0, 0, size, size, 0, 0, canvas.width, canvas.height);
+            
+            // Only look for this buff size from now on
             buff_sizes = [ buff_sizes[key] ];
             break;
         }
@@ -79,7 +81,7 @@ function readBuffs() {
     let ctx = canvas.getContext("2d");
 
     // Clear the canvas and draw the empty buff icon
-    ctx.drawImage(imgs.bolg_large.toImage(), 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(imgs.bolg_empty.toImage(), 0, 0, canvas.width, canvas.height);
 
     // At zamorak there is a mechanic with the same icon, the last one is always bolg
     // Reverse the order of the buffs so that the last one is the one we want.
@@ -105,6 +107,8 @@ document.getElementById("canvas").onclick = function () {
 
     console.log("Using image search: " + localStorage["bolg_search"]);
     alt1.setTooltip("Using image search: " + localStorage["bolg_search"]);
+
+    // Reload the window to apply changes
     setTimeout(function () {
         window.location.reload();
     }, 1000);
