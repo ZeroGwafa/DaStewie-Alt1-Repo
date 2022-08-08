@@ -157,10 +157,23 @@ var instaTimer = new _timer(function(time) {
 /* =======================
  * Chatbox reader
 */
-
+var last_timestamp = 0;
 function compare(str1: string, str2: string) {
     // Compare all languages with the input string
-    return str1.toLowerCase().includes(str2.toLowerCase());
+    let isMatch = str1.toLowerCase().includes(str2.toLowerCase());
+	let timestamp = str1.match(/^\[(\d{2}):(\d{2}):(\d{2})\]/);
+	
+	// Verify that it is not a duplicate message
+	if (timestamp && isMatch) {
+		let time = parseInt(timestamp[1]) * 3600 + parseInt(timestamp[2]) * 60 + parseInt(timestamp[3]);
+		if (time <= last_timestamp) {
+			// Duplicate message
+			return false;
+		}
+		last_timestamp = time;
+	}
+
+	return isMatch;
 }
 
 let reader = new ChatboxReader.default();
@@ -196,20 +209,22 @@ function showSelectedChat(pos) {
     } catch { }
 }
 
+
 function readChatbox() {
     var opts = reader.read() || [];
 
 	// For debug purposes
-    var chat = "";
-    for (const a in opts) {
-        chat += opts[a].text + " ";
-    }
-    console.log(chat);
+    // var chat = "";
+    // for (const a in opts) {
+    //     chat += opts[a].text + " ";
+    // }
+    // console.log(chat);
 
 	let phase = readTelos.readPhase() || readTelos.phase;
 
 	// Loop through all the messages	
 	for (const idx in opts) {
+		console.log(opts[idx].text);
 
 		// Instance made
 		if (compare(opts[idx].text, "Telos, the Warden")) {
@@ -256,6 +271,8 @@ function readChatbox() {
 			instaTimer.start(UI.settings['stepless'] == 1 ? 10 : 100);
 			continue;
 		}
+
+		
 	}
 }
 
