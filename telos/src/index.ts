@@ -22,6 +22,12 @@ let attack_messages = {
 	"anima":		"the anima consume you"
 }
 
+let imgs = A1lib.ImageDetect.webpackImages(
+    {
+        freedom: require("./images/Freedom.data.png"),
+	}
+);
+
 /* =======================
  * Read telos						
  */
@@ -33,6 +39,34 @@ let readTelos = new TelosReader();
  */
 var UI = new telosInterface();
 var oldphase, newphase, beam_time;
+
+function showOverlay(image, text) {
+	// The overay is roughly 84px width
+	const offset = -84 / 2;
+
+	alt1.overLaySetGroup("Telos");
+	alt1.overLayFreezeGroup("Telos");
+	alt1.overLayClearGroup("Telos");
+	alt1.overLayImage(
+		Math.floor(alt1.rsWidth / 2) + offset, 
+		Math.floor(alt1.rsHeight / 2), 
+		A1lib.encodeImageString(image), 
+		image.width, 
+		700
+	);
+	alt1.overLayTextEx(
+		text, 
+		A1lib.mixColor(255,255,255),
+		74,
+		Math.floor(alt1.rsWidth / 2), 
+		Math.floor(alt1.rsHeight / 2), 
+		700,
+		"",
+		true,
+		true
+	)
+	alt1.overLayContinueGroup("Telos");
+}
 
 function getColor(value) {
 	var hue = (value * 1.2).toString(10);
@@ -98,6 +132,7 @@ var FreedomTimer = new _timer(function(time) {
 	
 	if (time <= 0) {
 		FreedomTimer.stop();
+		return;
 	}
 });
 
@@ -205,7 +240,7 @@ function readChatbox() {
 		}
 
 		// Timers
-		if (compare(opts[idx].text, "Telos breaks free from its bindings")) {
+		if (compare(opts[idx].text, "Telos breaks free")) {
 			readTelos.readEnrage(); // Update enrage
 			FreedomTimer.reset(readTelos.freedomCooldown());
 			FreedomTimer.start(UI.settings['stepless'] == 1 ? 10 : 100);

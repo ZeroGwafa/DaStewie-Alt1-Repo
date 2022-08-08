@@ -232,7 +232,7 @@ export function TelosReader() {
 			return null;
 		}
 		var pos = this.phase_pos;
-		var img = img.captureHold(pos.x, pos.y, pos.w, pos.h);
+		var img = A1lib.captureHold(pos.x, pos.y, pos.w, pos.h);
 
 		// Find the string in the region
 		var str = alt1.bindReadColorString(img.handle, "chat", A1lib.mixColor(255, 255, 255), pos.xos, pos.yos);
