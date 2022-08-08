@@ -1,4 +1,6 @@
-function setTooltips(el) {
+import * as $ from "./jquery";
+
+export function setTooltips(el) {
 	$(el).tooltipster({
 		functionInit: function (instance, helper) {
 	    	if(!$(helper.origin).attr('data-tooltip-content')) return;
@@ -27,7 +29,7 @@ function setTooltips(el) {
 	});
 }
 
-function telosInterface() {
+export function telosInterface() {
 	var me = this;
 	this.settings = {
 		activetab: 		0,
@@ -406,7 +408,7 @@ function telosInterface() {
 	}
 }
 
-function message(str) {
+export function message(str) {
 	if (elid("eventlog")) {
 		elid("eventlog").innerHTML = str + "\n" + elid("eventlog").innerHTML;
 	}

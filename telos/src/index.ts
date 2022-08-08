@@ -1,122 +1,131 @@
-//alt1 base libs, provides all the commonly used methods for image matching and capture
-//also gives your editor info about the window.alt1 api
+// alt1 base libs, provides all the commonly used methods for image matching and capture
+// also gives your editor info about the window.alt1 api
 import * as A1lib from "@alt1/base";
 import * as ChatboxReader from "@alt1/chatbox";
 
+import { TelosReader } from "./TelosReader";
+import { _timer } from "./timer.js";
+import { telosInterface } from "./interface.js";
+
 import * as $ from "./jquery";
 
-//tell webpack to add index.html and appconfig.json to output
+// tell webpack to add index.html and appconfig.json to output
 require("!file-loader?name=[name].[ext]!./index.html");
 require("!file-loader?name=[name].[ext]!./appconfig.json");
 
-const appColor = A1lib.mixColor(0, 255, 0);
 
-var phase = A1lib.ImageDetect.webpackImages(
-    {
-        "p1": require("./images/edicts_1.data.png"),
-        "p2": require("./images/edicts_2.data.png"),
-        "p3": require("./images/edicts_3.data.png"),
-        "p4": require("./images/edicts_4.data.png"),    
-        "p5": require("./images/edicts_5.data.png"),
-        "p6": require("./images/edicts_6.data.png")
+let attack_messages = {
+	"uppercut": 	"Gielinor, give me strength",
+	"tendril": 		"Your anima will return to the source",
+	"stun": 		"Hold still, invader",
+	"virus":		"The anima stream cleanses you",
+	"anima":		"the anima consume you"
+}
+
+/* =======================
+ * Read telos						
+ */
+let readTelos = new TelosReader();
+
+
+/* =======================
+ * Timers					
+ */
+var UI = new telosInterface();
+var oldphase, newphase, beam_time;
+
+function getColor(value) {
+	var hue = (value * 1.2).toString(10);
+	return "hsl(" + hue + ",75%,50%)";
+}
+
+function sanitisePercentage(i){
+    return Math.min(100,Math.max(0,i));   
+}
+
+var beamTimer = new _timer(function(time) {
+	var secs_left = (Math.floor(time / 600) * 0.6 );
+	$("#beam_timer").html("Time until change: <br>" + secs_left.toFixed(1) + " seconds.");
+	
+	var percent = sanitisePercentage(secs_left / beam_time * 1000);
+	if (UI.settings['stepless'] == 1) percent = sanitisePercentage(time / beam_time);
+	
+	$("#beamBar").width(percent + "%");
+	$("#beamBar").css('background-color', getColor(percent));
+	
+	if (secs_left <= 0) {
+		if (oldphase in readTelos.beamchange) {
+			beamTimer.reset(beam_time = readTelos.beamchange[oldphase][1]);
+		}
 	}
-);
+});
+
+var vulnTimer = new _timer(function(time) {
+	var vuln_time = 600; // 60 seconds
+	var secs_left = (Math.floor(time / 600) * 0.6 );
+	$("#vuln_timer").html("Time until vuln wears off: <br>" + secs_left.toFixed(1) + " seconds.");
+	
+	var percent = sanitisePercentage(secs_left / vuln_time * 1000);
+	if (UI.settings['stepless'] == 1) percent = sanitisePercentage(time / vuln_time);
+	
+	$("#vulnBar").width(percent + "%");
+	$("#vulnBar").css('background-color', getColor(percent));
+	
+	if (time <= 0) {
+		vulnTimer.stop();
+	}
+});
+
+var FreedomTimer = new _timer(function(time) {
+	// Why was this here?
+	// if (readTelos.enrage == -1) return;
+	
+	var secs_left = (Math.floor(time / 600) * 0.6 );
+	var telos_cd = readTelos.freedomCooldown();
+	
+	var percent = sanitisePercentage(secs_left / telos_cd * 1000);
+	if (UI.settings['stepless'] == 1) percent = sanitisePercentage(time / telos_cd);
+	
+	$("#freedom_timer").html("Time until freedom: <br>" + secs_left.toFixed(1) + " seconds.");
+	$("#freedomBar").width(percent + "%");
+	
+	// Telos is immune for 6 seconds on p5 after getting stunned
+	if (readTelos.phase == 5 && ((telos_cd / 10) - secs_left) <= 6) {
+		$("#freedomBar").css('background-color', '#6600cc'); 	
+	} else {
+		$("#freedomBar").css('background-color', getColor(percent));
+	}
+	
+	if (time <= 0) {
+		FreedomTimer.stop();
+	}
+});
 
 
-// Spec order:
-// https://cdn.discordapp.com/attachments/992218608602189854/996933729933082784/K1u9v5j.png
-const entry = {
-    en: "But this is as far as you go",
-    fr: "pas plus loin",
-    de: "Sie haben es geschafft"
-}
+var instaTimer = new _timer(function(time) {
+	var insta_time = 126; // 60 seconds
+	var secs_left = (Math.floor(time / 600) * 0.6 );
+	$("#insta_timer").html("Time until insta kill: <br>" + secs_left.toFixed(1) + " seconds.");
+	
+	var percent = sanitisePercentage(secs_left / insta_time * 1000);
+	if (UI.settings['stepless'] == 1) percent = sanitisePercentage(time / insta_time);
+	
+	$("#instaBar").width(percent + "%");
+	$("#instaBar").css('background-color', getColor(percent));
+	
+	if (time <= 0) {
+		instaTimer.stop();
+	}
+});
 
-const channeler = "Zamorak begins to draw power and energy";  
-const flames_of_zamorak = {
-    name: "Flames of Zamorak",
-    en: "world will burn",
-    fr: "Que ce monde",
-    de: "Diese Welt wird",
-    tooltip: `   
-- Zamorak will yell "The world will burn." and slam into the ground, 
-  dealing 2 melee hits and spawning Flames of Zamorak between 
-  the player with aggression and Zamorak
-- To deal with this, all players walk under boss, :DeflectMelee: 
-  and use defensives if low hp
-- Black smoke (Flames of Zamorak) goes towards the a random player, 
-  the more smoke that is absorbed by a player the higher the typeless hit on them will be.
-  If not picked up Zamorak gets a damage reduction applied to him
-`,
-}
-const infernal_tomb = {
-    name: "Infernal Tomb",
-    en: "into the dark",
-    fr: "Avancez dans les",
-    de: "Kommen Sie ins",
-    tooltip: `
-- Zamorak says "Step into the dark... meet your death.", 
-  targets players, assigns a rune to them overhead and 
-  transports them to Infernus where greater demons are marching 
-  towards a portal to the main arena
-- Most players elect to use a quick couple abilities to kill 
-  the demons (ideally :caroming4: :gchain: → ability)
-- Players must go to the pad with the same 
-  corresponding rune they received overhead
-    - At higher enrages, it is highly suggested to pre-stun 
-      Zamorak and defeat all demons before exiting
-`
-}
-const adrenaline_cage = {
-    name: "Adrenaline Cage",
-    en: "chaos, unfettered",
-    fr: "LE CHAOS",
-    de: "TOTALES CHAOS",
-    tooltip: `
-- Zamorak will say "Chaos, unfettered!" then drop 
-  the prayers of those affected by the attack, 
-  preparing to bombard base with heavy magic attacks.
-- Remain still, :DeflectMage: and use :debil: , :reflect: or :devo:
-`
-}
-const chaos_blast = {
-    name: "Chaos Blast",
-    en: "will tear you",
-    fr: "vais vous mettre",
-    de: "Ich werde Sie",
-    tooltip: `
-- Zamorak will charge up his attack shouting "I will tear you asunder!"
-- To deal with the mechanic successfully stun him enough times, 
-  after such a damage requirement will appear to force him 
-  to launch the attack early
-- He will yell Feel the rage of a god. and send a red projectile 
-  that deals up to 25,000 soft typeless damage - this is 
-  reduced based on how fast he is interrupted
-- Use :vitality: / :res: / :disrupt: , at higher enrages you may need to use :immort:
-`
-}
-const rune_dest = {
-    name: "Rune of Destruction",
-    en: "already dead",
-    fr: "votre mort est",
-    de: "Sie sind schon",
-    tooltip: `
-- Zamorak will yell "You're already dead." and lay a massive 
-  red rune around him, with a gap between two circles
-- Black sludge will run clockwise or counterclockwise 
-  sometimes changing direction and applies stuns to those caught in it
-- Standing in the red areas will deal rapid soft typeless damage
-- The player cannot teleport to Infernus and runes cannot 
-  be charged for the duration of the attack
-`
-}
 
-var special_attacks = {
-    "p1": [flames_of_zamorak, infernal_tomb, rune_dest],
-    "p2": [infernal_tomb, adrenaline_cage, flames_of_zamorak],
-    "p3": [adrenaline_cage, chaos_blast, infernal_tomb],
-    "p4": [chaos_blast, rune_dest, adrenaline_cage],
-    "p5": [rune_dest, flames_of_zamorak, chaos_blast],
-    "p6": [flames_of_zamorak, infernal_tomb, rune_dest],
+/* =======================
+ * Chatbox reader
+*/
+
+function compare(str1: string, str2: string) {
+    // Compare all languages with the input string
+    return str1.toLowerCase().includes(str2.toLowerCase());
 }
 
 let reader = new ChatboxReader.default();
@@ -124,150 +133,149 @@ reader.readargs = {
     colors: [
         A1lib.mixColor(255,255,255),    // White (Timestamp)
         A1lib.mixColor(127,169,255),    // Blue (Timestamp)
-        A1lib.mixColor(153,255,153),    // Green (Zamorak's voice)
-        A1lib.mixColor(232,4,4)         // Red (Zamorak)
-    ]
+
+		A1lib.mixColor(132,212,119),	// green
+		A1lib.mixColor(195,16,16),		// red
+		A1lib.mixColor(0,255,0),		// green
+		A1lib.mixColor(255,0,0),		// red
+
+		// For testing
+		A1lib.mixColor(250,180,2),	
+		A1lib.mixColor(127,169,255),
+
+	]
 };
 
-function showSelectedChat(chat) {
-    //Attempt to show a temporary rectangle around the chatbox.  skip if overlay is not enabled.
+function showSelectedChat(pos) {
+    // Attempt to show a temporary rectangle around the chatbox.  skip if overlay is not enabled.
     try {
-      alt1.overLayRect(
-        appColor,
-        chat.mainbox.rect.x,
-        chat.mainbox.rect.y,
-        chat.mainbox.rect.width,
-        chat.mainbox.rect.height,
-        2000,
-        5
-      );
+		alt1.overLayRect(
+			A1lib.mixColor(0,255,0),
+			pos.mainbox.rect.x,
+			pos.mainbox.rect.y,
+			pos.mainbox.rect.width,
+			pos.mainbox.rect.height,
+			2000,
+			5
+		);
     } catch { }
 }
 
-//Find all visible chatboxes on screen
-let findChat = setInterval(function () {
-    if (reader.pos === null)
-        reader.find();
-    else {
-        clearInterval(findChat);
-
-        if (localStorage.ccChat) {
-            reader.pos.mainbox = reader.pos.boxes[localStorage.ccChat];
-        } else {
-            //If multiple boxes are found, this will select the first, which should be the top-most chat box on the screen.
-            reader.pos.mainbox = reader.pos.boxes[0];
-        }
-
-        showSelectedChat(reader.pos);
-        setInterval(function () {
-            readChatbox();
-        }, 600);
-    }
-}, 1000);
-
 function readChatbox() {
     var opts = reader.read() || [];
-    var chat = "";
 
+	// For debug purposes
+    var chat = "";
     for (const a in opts) {
         chat += opts[a].text + " ";
     }
     console.log(chat);
 
-    specAttackTracker(opts);
+	let phase = readTelos.readPhase() || readTelos.phase;
+
+	// Loop through all the messages	
+	for (const idx in opts) {
+
+		// Instance made
+		if (compare(opts[idx].text, "Telos, the Warden")) {
+			readTelos.phase = 1;
+			readTelos.lastAttack = ["1", "N/A"];
+			readTelos.nextAttack = "tendril";
+			beamTimer.reset(0);
+			beamTimer.stop();
+			continue;
+		}
+		
+		// Telos enrage message when using custom enrage
+		var m = opts[idx].text.match(/(\d{1,4})% enrage/);
+		if (m) {
+			readTelos.enrage = +m[1];
+			console.log("Enrage: " + readTelos.enrage);
+			continue;
+		}
+
+		// Look for Telos attack messages
+		for (const attack in attack_messages) {
+			if (compare(opts[idx].text, attack_messages[attack])) {
+				console.log(attack);
+				readTelos.lastAttack = [phase.toString(), attack];
+				readTelos.updateNextAttack();
+				break;
+			}
+		}
+
+		// Timers
+		if (compare(opts[idx].text, "Telos breaks free from its bindings")) {
+			readTelos.readEnrage(); // Update enrage
+			FreedomTimer.reset(readTelos.freedomCooldown());
+			FreedomTimer.start(UI.settings['stepless'] == 1 ? 10 : 100);
+			continue;
+		}
+		if (compare(opts[idx].text, "hex to your target")) { // TODO: why do we support this?
+			vulnTimer.reset(600);
+			vulnTimer.start(UI.settings['stepless'] == 1 ? 10 : 100);
+			continue;
+		}
+		if (compare(opts[idx].text, "font to interrupt")) {
+			instaTimer.reset(132);
+			instaTimer.start(UI.settings['stepless'] == 1 ? 10 : 100);
+			continue;
+		}
+	}
 }
 
-function compare(str1: string, str2: { en: string; fr: string; de: string; }) {
-    // Compare all languages with the input string
-    return str1.toLowerCase().includes(str2.en.toLowerCase()) ||
-           str1.toLowerCase().includes(str2.fr.toLowerCase()) ||
-           str1.toLowerCase().includes(str2.de.toLowerCase());
-}
-
-function getPhase() {
-    var current_phase = 1;
-
-    var img = A1lib.captureHoldFullRs();
-
-    // Look for the current phase
-    for (let key in phase) {
-        var img_found = img.findSubimage(phase[key]).length > 0;
-        if (img_found) {
-            break;
-        }
-        current_phase++;
-    }
-
-    // No phase found
-    if (current_phase > 6) {
-        current_phase = -1;
-    }
-
-    return current_phase;
-}
-
-var last_phase = 1;
-var next_spec  = 0;
-var skipped_spec = true;
-function specAttackTracker(lines) {
-    var new_phase = getPhase();
-    var current_phase = new_phase == -1 ? last_phase : new_phase;    
-    
-    if(current_phase != last_phase) {
-        last_phase = current_phase;
-
-        if (skipped_spec) {
-            // Go back and follow red arrow in the chart
-            // Always goes to 3rd spec unless it was the second spec skipped
-            next_spec--;
-            next_spec = next_spec == 1 ? 0 : 2;
-            console.log("Skipped a spec");
-        } else {
-            // Go back and down following the black arrow in the chart
-            next_spec--; 
-            if (next_spec < 0) next_spec = 2;
-        }
-        updateUI(current_phase);
-        skipped_spec = true;
-    }
-    
-    for (const a in lines) {
-        var line = lines[a].text;
-        var specs = special_attacks["p" + current_phase]; // Get the current phase's special attacks
-        for (let idx = 0; idx < specs.length; idx++) {
-            if (compare(line, entry)) {
-                console.log("New kill");
-                skipped_spec = true;
-                current_phase = 1;
-                updateUI(current_phase);
-                next_spec = 0;
-            }
-            if (compare(line, specs[idx])) {
-                next_spec = idx + 1;
-                skipped_spec = false;
-
-                if (next_spec > 2) next_spec = 0;
-
-                console.log("Next spec: " +  next_spec + " Phase: " + current_phase);
-                break;
-            }
-        }
-    }
-
-    $("#spec tr").removeClass("selected");
-    $("#spec tr").eq(next_spec).addClass("selected");
-}
-
-function updateUI(current_phase) {
-    $("#phase").text("Phase " + current_phase);
-    $("#spec tr > td").each(function( index ) {
-        $(this).text(special_attacks["p" + current_phase][index].name);
-        $(this).attr('title', (special_attacks["p" + current_phase][index].tooltip))
-    });
-}
-
-//check if we are running inside alt1 by checking if the alt1 global exists
+// Check if we are running inside alt1 by checking if the alt1 global exists
 if (window.alt1) {
+	// "Add app" button when openend in alt1 browser
     alt1.identifyAppUrl("./appconfig.json");
-    updateUI(1);
+
+	localStorage.removeItem('settings'); // TODO: Wait what? Who the fuck wrote this
+
+	UI.init();
+	UI.telosMenu();
+
+	let findChat = setInterval(function () {
+		if (reader.pos === null)
+			reader.find();
+		else {
+			console.log("Found chatbox");
+			clearInterval(findChat);
+	
+			if (localStorage.ccChat) {
+				reader.pos.mainbox = reader.pos.boxes[localStorage.ccChat];
+			} else {
+				//If multiple boxes are found, this will select the first, which should be the top-most chat box on the screen.
+				reader.pos.mainbox = reader.pos.boxes[0];
+			}
+	
+			showSelectedChat(reader.pos);
+			setInterval(function () {
+				readChatbox();
+
+				// Check for phase transitions.
+				newphase = readTelos.readPhase();
+				if (newphase != null && newphase != oldphase) {
+					oldphase = newphase;
+					if (newphase in readTelos.beamchange) {
+						beamTimer.reset(beam_time = readTelos.beamchange[newphase][0]);
+						beamTimer.start(UI.settings['stepless'] == 1 ? 10 : 100);
+					} else {
+						beamTimer.reset(0);
+						beamTimer.stop();
+					}
+					readTelos.updateNextAttack();
+					//$("#last_attack").html("Last attack: P" + readTelos.lastAttack[0] + " " + readTelos.lastAttack[1]);
+					//$("#next_attack").html("Next attack: P" + readTelos.phase + " " + readTelos.nextAttack);
+					$("#last_attack > td:first").html("Last attack: ");
+					$("#last_attack > td:last").html("P" + readTelos.lastAttack[0] + " " + readTelos.lastAttack[1].replace(/^\w/, c => c.toUpperCase()));
+					$("#next_attack > td:first").html("Next attack: ");
+					$("#next_attack > td:last").html("P" + readTelos.phase + " " + readTelos.nextAttack.replace(/^\w/, c => c.toUpperCase()));
+				}
+				if (readTelos.phase == 5 && UI.settings['showP5'] == 1) {
+					var atk = readTelos.countP5() || readTelos.P5count;
+					$(".crty-header").text("Telos attacks: " + atk);
+				}
+			}, 600);
+		}
+	}, 1000);
 }

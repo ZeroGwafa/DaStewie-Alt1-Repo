@@ -1,6 +1,6 @@
 /* https://codepen.io/davinciharsha/pen/vGBXzR */
 
-function _timer(callback) {
+export function _timer(callback) {
 	var time = 0; 		// The default time of the timer
 	var mode = 0; 		// Mode: count up or count down
 	var status = 0; 	// Status: timer is running or stopped
