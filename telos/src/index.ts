@@ -22,12 +22,6 @@ let attack_messages = {
 	"anima":		"the anima consume you"
 }
 
-let imgs = A1lib.ImageDetect.webpackImages(
-    {
-        freedom: require("./images/Freedom.data.png"),
-	}
-);
-
 /* =======================
  * Read telos						
  */
@@ -212,14 +206,6 @@ function showSelectedChat(pos) {
 
 function readChatbox() {
     var opts = reader.read() || [];
-
-	// For debug purposes
-    // var chat = "";
-    // for (const a in opts) {
-    //     chat += opts[a].text + " ";
-    // }
-    // console.log(chat);
-
 	let phase = readTelos.readPhase() || readTelos.phase;
 
 	// Loop through all the messages	
