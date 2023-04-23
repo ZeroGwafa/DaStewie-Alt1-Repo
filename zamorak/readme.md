@@ -1,15 +1,25 @@
-# Minimal Alt1/webpack/typescript example
+# Zamorak attack tracker
 
-how to use
-```sh
-#to initialize the repo and install dependencies
-npm i
-#build
-npm run build
-#alternatively to auto-rebuild when source files are changed
-npm run watch
-```
+The Zamorak attack tracker is an Alt1 app to keep track of the attack order of "Zamorak, Lord of Chaos", an end-game boss in Runescape.
 
-You can open `./dist/index.html` in your browser and it will give some basic functionality based one pasted images.
+The upcoming attack is highlighted in green. 
+Hover over any of the attacks to view the description of the respective attack.
 
-You can also open it in the Alt1 browser and click the `add app` button that appears to get some basic alt1 functionality.
+![test](https://i.imgur.com/bccP2fe.png)
+
+## Installation
+To install Zamorak tracker, copy & paste this link into your browser:<br/>
+[alt1://addapp/https://holycoil.nl/alt1/zamorak/appconfig.json](https://holycoil.nl/alt1/zamorak/appconfig.json)
+
+Or go to this URL in the alt1 browser:<br/>
+https://holycoil.nl/alt1/zamorak
+
+## Requirements
+- Alt1 toolkit must be installed, you can install that [here](https://runeapps.org/alt1).
+- Interface scaling needs to be at 100% (this is the default).
+- The recommended interface transparency is 0%. A transparent chatbox may cause issues.
+
+## Donations
+In case you would like to facilitate my coffee addiction:
+
+<a href="https://www.buymeacoffee.com/DaStewieRS" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
