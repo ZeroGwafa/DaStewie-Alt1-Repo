@@ -1,4 +1,4 @@
-# Zamorak attack tracker
+# Zamorak Attack Tracker
 
 The Zamorak attack tracker is an Alt1 app to keep track of the attack order of "Zamorak, Lord of Chaos", an end-game boss in Runescape.
 

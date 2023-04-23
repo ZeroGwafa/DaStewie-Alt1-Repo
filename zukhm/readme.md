@@ -1,15 +1,24 @@
-# Minimal Alt1/webpack/typescript example
+# Zuk hardmode helper
 
-how to use
-```sh
-#to initialize the repo and install dependencies
-npm i
-#build
-npm run build
-#alternatively to auto-rebuild when source files are changed
-npm run watch
-```
+Experimental app to aid with TzKal-Zuk waves, a challenge on Runescape.
+The app is currently not maintained or updated.
 
-You can open `./dist/index.html` in your browser and it will give some basic functionality based one pasted images.
+The app shows an image that shows how to solve the wave, and the ability rotation is shown below. On wave completion, the app will automatically show the next wave solve. You can navigate through the waves by left or right-clicking on the image to go the next or previous wave, respectively. 
 
-You can also open it in the Alt1 browser and click the `add app` button that appears to get some basic alt1 functionality.
+![](https://i.imgur.com/framdNC.png)
+
+## Installation
+To install Vorago Tag Timer, copy & paste this link into your browser:<br/>
+[alt1://addapp/https://digiridoo911.github.io/alt1/zukhm/dist/appconfig.json](https://digiridoo911.github.io/alt1/zukhm/dist/appconfig.json)
+
+Or go to this URL in the alt1 browser:<br/>
+https://digiridoo911.github.io/alt1/zukhm/dist/
+
+## Requirements
+- Alt1 toolkit must be installed, you can install that [here](https://runeapps.org/alt1).
+- Interface scaling needs to be at 100% (this is the default).
+
+## Donations
+In case you would like to facilitate my coffee addiction:
+
+<a href="https://www.buymeacoffee.com/DaStewieRS" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
