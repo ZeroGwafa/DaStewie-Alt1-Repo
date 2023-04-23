@@ -257,8 +257,6 @@ function readChatbox() {
 			instaTimer.start(UI.settings['stepless'] == 1 ? 10 : 100);
 			continue;
 		}
-
-		
 	}
 }
 
