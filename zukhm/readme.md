@@ -9,7 +9,9 @@ The app shows an image that shows how to solve the wave, and the ability rotatio
 
 ## Installation
 To install Vorago Tag Timer, copy & paste this link into your browser:<br/>
-[alt1://addapp/https://digiridoo911.github.io/alt1/zukhm/dist/appconfig.json](https://digiridoo911.github.io/alt1/zukhm/dist/appconfig.json)
+```
+alt1://addapp/https://digiridoo911.github.io/alt1/zukhm/dist/appconfig.json
+```
 
 Or go to this URL in the alt1 browser:<br/>
 https://digiridoo911.github.io/alt1/zukhm/dist/
