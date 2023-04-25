@@ -10,7 +10,9 @@ You can attack Vorago on 0.0 seconds left, therefore you should target cycle and
 
 ## Installation
 To install Vorago Tag Timer, copy & paste this link into your browser:<br/>
-[alt1://addapp/https://holycoil.nl/alt1/VoragoTag/appconfig.json](https://holycoil.nl/alt1/VoragoTag/appconfig.json)
+```
+alt1://addapp/https://holycoil.nl/alt1/VoragoTag/appconfig.json
+```
 
 Or go to this URL in the alt1 browser:<br/>
 https://holycoil.nl/alt1/VoragoTag

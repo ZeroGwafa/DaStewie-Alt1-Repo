@@ -8,7 +8,9 @@ The app supports two modes: using the buff bar API (default) and an image search
 
 ## Installation
 To install BOLG enlarger, copy & paste this link into your browser:<br/>
-[alt1://addapp/https://holycoil.nl/alt1/bolg/appconfig.json](https://holycoil.nl/alt1/bolg/appconfig.json)
+```
+alt1://addapp/https://holycoil.nl/alt1/bolg/appconfig.json
+```
 
 Or go to this URL in the alt1 browser:<br/>
 https://holycoil.nl/alt1/bolg

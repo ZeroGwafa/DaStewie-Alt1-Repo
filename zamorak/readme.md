@@ -5,7 +5,7 @@ The Zamorak attack tracker is an Alt1 app to keep track of the attack order of "
 The upcoming attack is highlighted in green. 
 Hover over any of the attacks to view the description of the respective attack.
 
-![test](https://i.imgur.com/bccP2fe.png)
+![](https://i.imgur.com/bccP2fe.png)
 
 ## Installation
 To install Zamorak tracker, copy & paste this link into your browser:<br/>

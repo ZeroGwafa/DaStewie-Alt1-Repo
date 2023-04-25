@@ -20,7 +20,9 @@ The stepless timer setting allows you to switch between 0.1 second granularity (
 
 ## Installation
 To install Telos tracker, copy & paste this link into your browser:<br/>
-[alt1://addapp/https://holycoil.nl/alt1/telosApp/appconfig.json](https://holycoil.nl/alt1/telosApp/appconfig.json)
+```
+alt1://addapp/https://holycoil.nl/alt1/telosApp/appconfig.json
+```
 
 Or go to this URL in the alt1 browser:<br/>
 https://holycoil.nl/alt1/telosApp
