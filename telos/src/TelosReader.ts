@@ -190,6 +190,7 @@ export function TelosReader() {
 		me.readPhase();
 		var lastPhase = me.lastAttack[0];
 		var lastAttack = me.lastAttack[1];
+		console.log("last phase: " + lastPhase + " Lastattack: " + lastAttack);
 		if (lastPhase && lastAttack) {
 			if (me.specialAttacks[lastPhase][lastAttack]) {
 				me.nextAttack = me.specialAttacks[lastPhase][lastAttack][me.phase];
