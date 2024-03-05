@@ -41,10 +41,8 @@ function readBuffsByImage() {
         let name = buff_sizes[key];
         let img_found = img.findSubimage(imgs[name]);
         if (img_found.length > 0) { 
-            // At zamorak there is a mechanic with the same icon, the last one is always bolg.
-            let last_item = img_found.length-1;
             let size = sizes[name];
-            let buff = A1lib.capture(img_found[last_item].x, img_found[last_item].y, size, size);
+            let buff = A1lib.capture(img_found[0].x, img_found[0].y, size, size);
             
             ctx.drawImage(buff.toDrawableData().toImage(), 0, 0, size, size, 0, 0, canvas.width, canvas.height);
             
@@ -83,8 +81,6 @@ function readBuffs() {
     // Clear the canvas and draw the empty buff icon
     ctx.drawImage(imgs.bolg_empty.toImage(), 0, 0, canvas.width, canvas.height);
 
-    // At zamorak there is a mechanic with the same icon, the last one is always bolg
-    // Reverse the order of the buffs so that the last one is the one we want.
     for (const a in opts) {
         if (opts[a].compareBuffer(imgs.bolg)) {            
             let img = opts[a].buffer.toImage();

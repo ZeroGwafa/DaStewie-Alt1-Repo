@@ -257,11 +257,6 @@ function readChatbox() {
 			instaTimer.start(UI.settings['stepless'] == 1 ? 10 : 100);
 			continue;
 		}
-
-		$("#last_attack > td:first").html("Last attack: ");
-		$("#last_attack > td:last").html("P" + readTelos.lastAttack[0] + " " + readTelos.lastAttack[1].replace(/^\w/, c => c.toUpperCase()));
-		$("#next_attack > td:first").html("Next attack: ");
-		$("#next_attack > td:last").html("P" + readTelos.phase + " " + readTelos.nextAttack.replace(/^\w/, c => c.toUpperCase()));
 	}
 }
 
