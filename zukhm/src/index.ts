@@ -6,6 +6,7 @@ import { findChar } from "@alt1/ocr/dist";
 //tell webpack to add index.html and appconfig.json to output
 require("!file-loader?name=[name].[ext]!./index.html");
 require("!file-loader?name=[name].[ext]!./appconfig.json");
+require("../images/", true, /\.(png|svg|jpg|gif)$/);
 
 let imgs = A1lib.ImageDetect.webpackImages({
     "wave": require("./images/wave_interface.data.png"),
