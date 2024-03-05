@@ -85,7 +85,7 @@ function readBuffs() {
 
     // At zamorak there is a mechanic with the same icon, the last one is always bolg
     // Reverse the order of the buffs so that the last one is the one we want.
-    for (const a in opts.reverse()) {
+    for (const a in opts) {
         if (opts[a].compareBuffer(imgs.bolg)) {            
             let img = opts[a].buffer.toImage();
 
